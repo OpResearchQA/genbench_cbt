@@ -49,14 +49,15 @@ def get_input_prompt_for_ans(reasoning_prompt, reasoning):
 
 
 def ltr_to_idx(ltr):
+    if len(ltr) != 1:
+        return -10
     return ord(ltr) - ord("A")
 
 
 def get_config_and_api_key_name_from_args():
     parser = ArgumentParser()
-    parser.add_argument("--ds_name", help="orqa", default="orqacot3final", required=False)
-    parser.add_argument("--ds_ans_name", help="orqa", default="orqacot3final", required=False)
-    parser.add_argument("--model_name", help="Model name", default="llama2-70b-chat", required=False)
+    parser.add_argument("--ds_name", help="orqa", default="cot", required=False)
+    parser.add_argument("--model_name", help="Model name", default="llama2-7b-chat", required=False)
     parser.add_argument("--n_shots", type=int, help="# of shots", default=0, required=False)
     parser.add_argument("--verbose", type=int, help="1 to debug", default=0, required=False)
 
@@ -233,12 +234,12 @@ def generate_llm_prediction(ds, ds_ans, type, **kwargs) -> List[Dict]:
 if __name__ == "__main__":
     config = get_config_and_api_key_name_from_args()
     verbose = config.verbose
-    task = load_task("orqafinal:" + config.ds_name)
+    task = load_task("operationsresearchqa:" + config.ds_name)
     ds = task.get_prepared_datasets(
         PreparationStrategy.PROMPT_BASED_TESTING, shot_list=[config.n_shots], reasoning_extraction=True
     )[config.n_shots]
 
-    task = load_task("orqafinal:" + config.ds_ans_name)
+    task = load_task("operationsresearchqa:" + config.ds_name)
     ds_ans = task.get_prepared_datasets(
         PreparationStrategy.PROMPT_BASED_TESTING, shot_list=[config.n_shots], reasoning_extraction=False
     )[config.n_shots]
